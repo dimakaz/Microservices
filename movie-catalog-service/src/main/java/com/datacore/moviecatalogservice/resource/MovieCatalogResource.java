@@ -1,6 +1,5 @@
 package com.datacore.moviecatalogservice.resource;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.datacore.moviecatalogservice.models.CatalogItem;
 import com.datacore.moviecatalogservice.models.Movie;
-import com.datacore.moviecatalogservice.models.Rating;
+import com.datacore.moviecatalogservice.models.UserRating;
 
 @RestController
 @RequestMapping("/catalog")
@@ -29,12 +28,9 @@ public class MovieCatalogResource {
 	public List<CatalogItem> getCatalog(@PathVariable("userId") String userId){
 		
 		// get all rated movie IDs
-		List <Rating> ratings = Arrays.asList(
-				new Rating("12334", 4),
-				new Rating("56782", 2)
-		);
-		
-		return ratings.stream().map(rating -> {
+		UserRating ratings =  restTemplate.getForObject("http://localhost:8083/ratingsdata/users/" + userId, UserRating.class);
+					
+		return ratings.getUserRating().stream().map(rating -> {
 			// Call external Rest API via restTemplate (deprecated)
 			//Movie movie = restTemplate.getForObject("http://localhost:8082/movies/" + rating.getMovieId(), Movie.class);
 			
