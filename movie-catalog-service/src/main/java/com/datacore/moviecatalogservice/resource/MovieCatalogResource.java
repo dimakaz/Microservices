@@ -28,19 +28,21 @@ public class MovieCatalogResource {
 	public List<CatalogItem> getCatalog(@PathVariable("userId") String userId){
 		
 		// get all rated movie IDs
-		UserRating ratings =  restTemplate.getForObject("http://localhost:8083/ratingsdata/users/" + userId, UserRating.class);
+		UserRating ratings =  restTemplate.getForObject("http://rating-service/ratingsdata/users/" + userId, UserRating.class);
 					
 		return ratings.getUserRating().stream().map(rating -> {
-			// Call external Rest API via restTemplate (deprecated)
-			//Movie movie = restTemplate.getForObject("http://localhost:8082/movies/" + rating.getMovieId(), Movie.class);
 			
-			// Call external Rest API via webClientBuider
-			Movie movie = webClientBuider.build()
-			.get()
-			.uri("http://localhost:8082/movies/" + rating.getMovieId())
-			.retrieve()
-			.bodyToMono(Movie.class)
-			.block();
+			// Call external Rest API via restTemplate
+			Movie movie = restTemplate.getForObject("http://movie-info-service/movies/" + rating.getMovieId(), Movie.class);
+
+			
+// Call external Rest API via webClientBuider
+//			Movie movie = webClientBuider.build()
+//			.get()
+//			.uri("http://localhost:8082/movies/" + rating.getMovieId())
+//			.retrieve()
+//			.bodyToMono(Movie.class)
+//			.block();
 			
 			return new CatalogItem(movie.getName(), "Test", rating.getRating());
 		})
