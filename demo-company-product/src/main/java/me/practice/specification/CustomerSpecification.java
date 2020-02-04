@@ -35,7 +35,7 @@ public class CustomerSpecification implements Specification<Customer> {
             if (root.get(criteria.getKey()).getJavaType() == String.class) {
                 return builder.like(root.<String>get(criteria.getKey()), "%" + criteria.getValue() + "%");
             } else {
-                return builder.in().equal(root.get(criteria.getKey()), criteria.getValue());
+                return builder.equal(root.get(criteria.getKey()), criteria.getValue());
             }
         }
         return null;
