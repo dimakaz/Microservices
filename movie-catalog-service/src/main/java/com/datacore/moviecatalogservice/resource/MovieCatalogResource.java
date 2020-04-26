@@ -15,6 +15,7 @@ import com.datacore.moviecatalogservice.models.CatalogItem;
 import com.datacore.moviecatalogservice.models.Movie;
 import com.datacore.moviecatalogservice.models.UserRating;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 @RestController
 @RequestMapping("/catalog")
@@ -27,7 +28,12 @@ public class MovieCatalogResource {
 	private WebClient.Builder webClientBuider;
 	
 	@RequestMapping("/{userId}")
-	@HystrixCommand(fallbackMethod = "getFallbackCatalog")
+	@HystrixCommand(fallbackMethod = "getFallbackCatalog", 
+		commandProperties = {
+			@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "2000"),
+			@HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "5"),
+			@HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "50"),
+			@HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "5000") })
 	public List<CatalogItem> getCatalog(@PathVariable("userId") String userId){
 		
 		// get all rated movie IDs
